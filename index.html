@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/3/34/Icon_hacker.png">
+    <title>FFUF CMD Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        label, textarea, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        textarea {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #results {
+            margin-top: 20px;
+        }
+        .command-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .command {
+            flex-grow: 1;
+            font-family: monospace;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            margin-right: 10px;
+        }
+        .copy-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+            width: 60px; /* Ensure all buttons are the same size */
+            text-align: center;
+        }
+        .copy-btn:hover {
+            background-color: #0056b3;
+        }
+        .copied {
+            background-color: black !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>FFUF Command Generator</h1>
+    </header>
+    <main>
+        <form id="ffuf-form">
+            <label for="links">Enter the links (one per line):</label>
+            <textarea id="links" name="links" placeholder="http://example.com"></textarea>
+            <button type="button" onclick="generateCommands()">Generate Commands</button>
+        </form>
+        <div id="results"></div>
+    </main>
+    <script>
+        function generateCommands() {
+            const links = document.getElementById('links').value.split('\n');
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            const commandTemplate = 'ffuf -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -u [LINK]/FUZZ -fc 403,401';
+
+            links.forEach(link => {
+                if (link.trim()) {
+                    const command = commandTemplate.replace('[LINK]', link.trim());
+                    const commandContainer = document.createElement('div');
+                    commandContainer.className = 'command-container';
+
+                    const commandDiv = document.createElement('div');
+                    commandDiv.className = 'command';
+                    commandDiv.textContent = command;
+
+                    const copyButton = document.createElement('button');
+                    copyButton.className = 'copy-btn';
+                    copyButton.textContent = 'Copy';
+                    copyButton.onclick = () => copyCommand(command, copyButton);
+
+                    commandContainer.appendChild(commandDiv);
+                    commandContainer.appendChild(copyButton);
+                    resultsDiv.appendChild(commandContainer);
+                }
+            });
+        }
+
+        function copyCommand(command, button) {
+            navigator.clipboard.writeText(command).then(() => {
+                button.classList.add('copied');
+                button.textContent = 'Copied';
+            });
+        }
+    </script>
+</body>
+</html>
